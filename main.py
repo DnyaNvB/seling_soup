@@ -1,24 +1,46 @@
-import numpy as np
+from collections import defaultdict
 
-array = list(map(int, input().split()))
+def is_feasible(bills):
+    cash_reserve = dict.fromkeys(bills)
+    cash_reserve = defaultdict(int)
 
-is_true = np.zeros(len(array)) # false
+    for bill in bills:
+        cash_reserve[bill] += 1
+        change_needed = bill - 5
 
-pocket = 0
+        while change_needed >= 20 and cash_reserve[20] > 0:
+            cash_reserve[20] -= 1
+            change_needed -= 20
+        while change_needed >= 15 and cash_reserve[15] > 0:
+            cash_reserve[15] -= 1
+            change_needed -= 15   
+        while change_needed >= 10 and cash_reserve[10] > 0:
+            cash_reserve[10] -= 1
+            change_needed -= 10
+        while change_needed >= 5 and cash_reserve[5] > 0:
+            cash_reserve[5] -= 1
+            change_needed -= 5
 
-for i in range(len(array)):
-  if pocket != 0:
-    if (pocket - array[i]) >= 0 and array[i] > 5:
-      pocket = pocket - array[i] + 5
-      is_true[i] = True
-    elif array[i] == 5:
-      is_true[i] = True
-      pocket = pocket + 5
-    elif pocket - array[i] < 5:
-      print("No")
-      break
-  elif array[i] == 5:
-        is_true[i] = True
-        pocket = pocket + 5
-if is_true.all() == True:
-  print("yes")
+        if change_needed > 0:
+            print(f'cash_reserve: {cash_reserve}')
+            return False
+
+        print(f'bill: {bill}')
+        print(f'change_needed: {change_needed}')
+        print(f'cash_reserve: {cash_reserve}')
+        print("---------------------------------------------------------------")
+
+    return True
+
+customer_money = list(map(int, input().split()))
+print("---------------------------------------------------------------")
+print(f'result: {"Yes" if is_feasible(customer_money) else "No"}')
+
+
+# challenging test case:
+# 5 5 5 10 15 10
+# 5 5 10 5 15 10
+# 5 10 15
+# 5 5 5 10 25 5
+# 5 5 5 10 25 15
+# 5 10 5 5 5 10 10 15 5 5 15 20 15 10 10 10
